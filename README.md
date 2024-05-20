@@ -9,25 +9,38 @@ various deployment strategies and progressive delivery features of Argo Rollouts
 
 The following examples are provided:
 
-| Example | Description |
-|---------|-------------|
-| [Canary](examples/canary) | Rollout which uses the canary update strategy |
-| [Blue-Green](examples/blue-green) |  Rollout which uses the blue-green update strategy |
-| [Canary Analysis](examples/analysis) | Rollout which performs canary analysis as part of the update. Uses the prometheus metric provider. |
-| [Experiment](examples/experiment) | Experiment which performs an A/B test. Performs analysis against the A and B using the job metric provider |
-| [Preview Stack Testing](examples/preview-testing) | Rollout which launches an experiment that tests a preview stack (which receives no production traffic) |
-| [Canary with istio (1)](examples/istio) | Rollout which uses host-level traffic splitting during update |
-| [Canary with istio (2)](examples/istio-subset) | Rollout which uses subset-level traffic splitting during update |
+| Example                                           | Description                                                                                                |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [Canary](examples/canary)                         | Rollout which uses the canary update strategy                                                              |
+| [Blue-Green](examples/blue-green)                 | Rollout which uses the blue-green update strategy                                                          |
+| [Canary Analysis](examples/analysis)              | Rollout which performs canary analysis as part of the update. Uses the prometheus metric provider.         |
+| [Experiment](examples/experiment)                 | Experiment which performs an A/B test. Performs analysis against the A and B using the job metric provider |
+| [Preview Stack Testing](examples/preview-testing) | Rollout which launches an experiment that tests a preview stack (which receives no production traffic)     |
+| [Canary with istio (1)](examples/istio)           | Rollout which uses host-level traffic splitting during update                                              |
+| [Canary with istio (2)](examples/istio-subset)    | Rollout which uses subset-level traffic splitting during update                                            |
 
 Before running an example:
 
-1. Install Argo Rollouts
+Enter the dev shell:
 
-- See the document [Getting Started](https://argoproj.github.io/argo-rollouts/getting-started/)
+```bash
+nix develop
+```
 
-2. Install Kubectl Plugin
+Setup Argo Rollouts (first time)
 
-- See the document [Kubectl Plugin](https://argoproj.github.io/argo-rollouts/features/kubectl-plugin/)
+```bash
+k3d cluster create progressove-demo
+kubectl create namespace progressive-rollouts
+kubectl apply -n progressive-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+kubectl apply -k https://github.com/argoproj/argo-rollouts/manifests/crds\?ref\=stable
+```
+
+Setup the CLI completion for kubectl-argo-rollouts:
+
+```bash
+source <(kubectl-argo-rollouts completion bash)
+```
 
 To run an example:
 
@@ -45,16 +58,21 @@ kubectl argo rollouts get experiment <EXPERIMENT-NAME> --watch
 ```
 
 3. For rollouts, trigger an update by setting the image of a new color to run:
+
 ```bash
 kubectl argo rollouts set image <ROLLOUT-NAME> "*=argoproj/rollouts-demo:yellow"
+```
+
+```bash
+kubectl argo rollouts dashboard
 ```
 
 ## Images
 
 Available images colors are: red, orange, yellow, green, blue, purple (e.g. `argoproj/rollouts-demo:yellow`). Also available are:
-* High error rate images, prefixed with the word `bad` (e.g. `argoproj/rollouts-demo:bad-yellow`)
-* High latency images, prefixed with the word `slow` (e.g. `argoproj/rollouts-demo:slow-yellow`)
 
+- High error rate images, prefixed with the word `bad` (e.g. `argoproj/rollouts-demo:bad-yellow`)
+- High latency images, prefixed with the word `slow` (e.g. `argoproj/rollouts-demo:slow-yellow`)
 
 ## Releasing
 

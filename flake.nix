@@ -17,7 +17,11 @@
       in
         with pkgs; {
           devShells.default = mkShell {
-            buildInputs = [k3d kubectl kustomize];
+            buildInputs = [k3d kubectl kustomize argo-rollouts kubernetes-helm minikube];
+            shellHook = ''
+              source <(kubectl completion bash)
+              source <(kubectl-argo-rollouts completion bash)
+            '';
           };
         }
     );
